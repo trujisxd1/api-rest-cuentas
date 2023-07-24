@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "cuentas")
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cuenta {
+public class Cuenta extends RepresentationModel<Cuenta> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,7 @@ public class Cuenta {
     private  String numeroDeCuenta;
 
 
-    private float balance;
+    private float monto;
 
 
     public Cuenta(Integer id, String numeroDeCuenta) {
