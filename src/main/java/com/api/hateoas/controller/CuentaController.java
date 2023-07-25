@@ -3,7 +3,7 @@ package com.api.hateoas.controller;
 import com.api.hateoas.model.Cuenta;
 import com.api.hateoas.model.Monto;
 import com.api.hateoas.service.CuentaService;
-import org.antlr.v4.runtime.CommonToken;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -38,6 +38,7 @@ public class CuentaController {
         for (Cuenta cuenta : cuentas ){
 
             cuenta.add(linkTo(methodOn(CuentaController.class).listarCuenta(cuenta.getId())).withSelfRel());
+            cuenta.add(linkTo(methodOn(CuentaController.class).depositarDinero(cuenta.getId(), null)).withRel("depositos"));
             cuenta.add(linkTo(methodOn(CuentaController.class).listarCunetas()).withRel(IanaLinkRelations.COLLECTION));
 
             CollectionModel<Cuenta> modelo= CollectionModel.of(cuentas);
@@ -57,6 +58,7 @@ public class CuentaController {
 
             Cuenta cuenta = service.get(id);
             cuenta.add(linkTo(methodOn(CuentaController.class).listarCuenta(cuenta.getId())).withSelfRel());
+            cuenta.add(linkTo(methodOn(CuentaController.class).depositarDinero(cuenta.getId(), null)).withRel("depositos"));
             cuenta.add(linkTo(methodOn(CuentaController.class).listarCunetas()).withRel(IanaLinkRelations.COLLECTION));
             return  new ResponseEntity<>(cuenta, HttpStatus.OK);
         }catch (Exception exception){
@@ -71,6 +73,7 @@ public class CuentaController {
         Cuenta cuentaBBDD = service.save(cuenta);
 
         cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCuenta(cuentaBBDD.getId())).withSelfRel());
+        cuentaBBDD.add(linkTo(methodOn(CuentaController.class).depositarDinero(cuentaBBDD.getId(), null)).withRel("depositos"));
         cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCunetas()).withRel(IanaLinkRelations.COLLECTION));
 
         return  ResponseEntity.created(linkTo(methodOn(CuentaController.class).listarCuenta(cuentaBBDD.getId())).toUri()).body(cuentaBBDD);
@@ -79,12 +82,15 @@ public class CuentaController {
 
     }
 
+
+
     @PutMapping
     public ResponseEntity<Object> editarCuenta(@RequestBody Cuenta cuenta){
 
         Cuenta cuentaBBDD = service.save(cuenta);
 
         cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCuenta(cuentaBBDD.getId())).withSelfRel());
+        cuentaBBDD.add(linkTo(methodOn(CuentaController.class).depositarDinero(cuentaBBDD.getId(), null)).withRel("depositos"));
         cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCunetas()).withRel(IanaLinkRelations.COLLECTION));
 
         return  ResponseEntity.created(linkTo(methodOn(CuentaController.class).listarCuenta(cuentaBBDD.getId())).toUri()).body(cuentaBBDD);
@@ -99,6 +105,19 @@ public class CuentaController {
 
         cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCuenta(cuentaBBDD.getId())).withSelfRel());
         cuentaBBDD.add(linkTo(methodOn(CuentaController.class).depositarDinero(cuentaBBDD.getId(), null)).withRel("depositos"));
+        cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCunetas()).withRel(IanaLinkRelations.COLLECTION));
+
+        return new ResponseEntity<>(cuentaBBDD,HttpStatus.OK);
+
+    }
+    @PatchMapping("/{id}/retirar")
+
+    public  ResponseEntity<Object>retirarDinero(@PathVariable Integer id, @RequestBody Monto monto) {
+        Cuenta cuentaBBDD = service.retirar(monto.getMonto(), id);
+
+        cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCuenta(cuentaBBDD.getId())).withSelfRel());
+        cuentaBBDD.add(linkTo(methodOn(CuentaController.class).depositarDinero(cuentaBBDD.getId(), null)).withRel("depositos"));
+        cuentaBBDD.add(linkTo(methodOn(CuentaController.class).retirarDinero(cuentaBBDD.getId(), null)).withRel("retirar"));
         cuentaBBDD.add(linkTo(methodOn(CuentaController.class).listarCunetas()).withRel(IanaLinkRelations.COLLECTION));
 
         return new ResponseEntity<>(cuentaBBDD,HttpStatus.OK);
