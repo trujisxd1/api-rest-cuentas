@@ -44,5 +44,19 @@ public class CuentaService {
          this.repository.deleteById(id);
     }
 
+    public  Cuenta depositar(float monto,Integer id){
+
+        repository.actualizarMonto(monto, id);
+
+        return  repository.findById(id).get();
+    }
+
+    public  Cuenta retirar(float monto,Integer id){
+
+        repository.actualizarMonto(-monto, id);
+
+        return  repository.findById(id).get();
+    }
+
 
 }
